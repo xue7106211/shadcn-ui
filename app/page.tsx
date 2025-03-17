@@ -6,8 +6,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { Slider } from "@/components/ui/slider";
 import { Checkbox } from "@/components/ui/checkbox";
+import { useToast } from "@/components/ui/use-toast";
 
 export default function Home() {
+  const { toast } = useToast();
   const [password, setPassword] = useState("");
   const [length, setLength] = useState(12);
   const [options, setOptions] = useState({
@@ -41,6 +43,24 @@ export default function Home() {
     }
 
     setPassword(generatedPassword);
+  };
+
+  const copyPassword = async () => {
+    if (!password) return;
+    
+    try {
+      await navigator.clipboard.writeText(password);
+      toast({
+        title: "复制成功",
+        description: "密码已复制到剪贴板",
+      });
+    } catch (err) {
+      toast({
+        title: "复制失败",
+        description: "请手动复制密码",
+        variant: "destructive",
+      });
+    }
   };
 
   return (
@@ -121,6 +141,8 @@ export default function Home() {
               value={password}
               readOnly
               placeholder="生成的密码将显示在这里"
+              onClick={copyPassword}
+              className="cursor-pointer"
             />
             <Button onClick={generatePassword}>生成</Button>
           </div>
